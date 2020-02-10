@@ -20,7 +20,7 @@ public class FileRepository {
 
     private static FileRepository INSTANCE;
     // TODO: задать базовый URL, используется во всех методах
-    private String BASE_URL = "localhost";
+    private String BASE_URL = "localhost/test";
 
     public static FileRepository getInstance() {
         if (INSTANCE == null) {
@@ -46,10 +46,14 @@ public class FileRepository {
             e.printStackTrace();
         }
 
-        if (document != null)
-            getFilesList(FileEntity.ROOT);
-        else
-        return null;
+        if (document != null) {
+            for (Element e : document.select("a")) {
+
+            }
+
+        } else {
+            return new ArrayList<>();
+        }
 
 
     // Работаем с путём
