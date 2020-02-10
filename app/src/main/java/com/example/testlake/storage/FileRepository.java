@@ -47,7 +47,7 @@ public class FileRepository {
         }
 
         if (document != null) {
-            for (Element e : document.select("a")) {
+            for (Element e : document.select("a[href]")) {
 
             }
 
