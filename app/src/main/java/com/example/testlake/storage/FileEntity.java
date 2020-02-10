@@ -6,10 +6,13 @@ public class FileEntity {
 
     @NonNull
     private String fileName;
+    @NonNull
+    private String path;
     private boolean isDirectory;
 
-    public FileEntity(@NonNull String fileName, boolean isDirectory) {
+    public FileEntity(@NonNull String fileName, @NonNull String path, boolean isDirectory) {
         this.fileName = fileName;
+        this.path = path;
         this.isDirectory = isDirectory;
     }
 
@@ -22,6 +25,11 @@ public class FileEntity {
         return isDirectory;
     }
 
+    @NonNull
+    public String getPath() {
+        return path;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -30,12 +38,14 @@ public class FileEntity {
         FileEntity that = (FileEntity) o;
 
         if (isDirectory != that.isDirectory) return false;
-        return fileName.equals(that.fileName);
+        if (!fileName.equals(that.fileName)) return false;
+        return path.equals(that.path);
     }
 
     @Override
     public int hashCode() {
         int result = fileName.hashCode();
+        result = 31 * result + path.hashCode();
         result = 31 * result + (isDirectory ? 1 : 0);
         return result;
     }

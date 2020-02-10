@@ -25,13 +25,24 @@ public class FileRepository {
         return INSTANCE;
     }
 
-    public List<FileEntity> getFilesList(@NonNull String path) {
+    public List<FileEntity> getFilesList(@NonNull FileEntity dir) {
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException(dir.getPath() + "not a directory");
+        }
+
+        // Работаем с путём
+        String path = dir.getPath();
+
         return new ArrayList<>();
     }
 
     // TODO: можно использовать HttpUrlConnection,
     //       чтобы открыть файл на сервере и передать полученный InputStream в провайдер
-    public InputStream openFile(@NonNull String path) {
+    public InputStream openFile(@NonNull FileEntity file) {
+        if (file.isDirectory()) {
+            throw new IllegalArgumentException(file.getPath() + "not a file");
+        }
+
         return null;
     }
 }
