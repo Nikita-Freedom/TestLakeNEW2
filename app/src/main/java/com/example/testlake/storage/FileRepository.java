@@ -48,15 +48,18 @@ public class FileRepository {
 
         if (document != null) {
             for (Element e : document.select("a[href]")) {
-
+                FileEntity fileEntity = new FileEntity("abs:href", dir.getPath() + "/", false);
+                e.attr("abs:href");
+                return String 
             }
-
         } else {
             return new ArrayList<>();
         }
 
+
         return new ArrayList<>();
     }
+
 
     // TODO: можно использовать HttpUrlConnection,
     //       чтобы открыть файл на сервере и передать полученный InputStream в провайдер
