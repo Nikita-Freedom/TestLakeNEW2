@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 public class FileEntity {
 
+    public static final FileEntity ROOT = new FileEntity("", "", true);
+
     @NonNull
     private String fileName;
     @NonNull
