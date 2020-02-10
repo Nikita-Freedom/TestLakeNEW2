@@ -41,7 +41,7 @@ public class FileRepository {
         Document document = null;
 
         try {
-            document = Jsoup.connect(BASE_URL).get();
+            document = Jsoup.connect(BASE_URL + dir.getPath()).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,11 +55,8 @@ public class FileRepository {
             return new ArrayList<>();
         }
 
-
-    // Работаем с путём
-    String path = dir.getPath();
-    return new ArrayList<>();
-}
+        return new ArrayList<>();
+    }
 
     // TODO: можно использовать HttpUrlConnection,
     //       чтобы открыть файл на сервере и передать полученный InputStream в провайдер
