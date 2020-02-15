@@ -1,26 +1,35 @@
 package com.example.testlake.storage;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class FileEntity {
+public class FileEntity implements Comparable<FileEntity> {
 
-    public static final FileEntity ROOT = new FileEntity("", "", true);
+    public static final FileEntity ROOT = new FileEntity("", "/", null, true);
 
     @NonNull
-    private String fileName;
+    private String name;
     @NonNull
     private String path;
     private boolean isDirectory;
+    @Nullable
+    private String mimeType;
 
-    public FileEntity(@NonNull String fileName, @NonNull String path, boolean isDirectory) {
-        this.fileName = fileName;
+    public FileEntity(
+            @NonNull String name,
+            @NonNull String path,
+            @Nullable String mimeType,
+            boolean isDirectory
+    ) {
+        this.name = name;
         this.path = path;
+        this.mimeType = mimeType;
         this.isDirectory = isDirectory;
     }
 
     @NonNull
-    public String getFileName() {
-        return fileName;
+    public String getName() {
+        return name;
     }
 
     public boolean isDirectory() {
@@ -32,23 +41,42 @@ public class FileEntity {
         return path;
     }
 
+    @Nullable
+    public String getMimeType() {
+        return mimeType;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        FileEntity that = (FileEntity) o;
+        FileEntity that = (FileEntity)o;
 
-        if (isDirectory != that.isDirectory) return false;
-        if (!fileName.equals(that.fileName)) return false;
         return path.equals(that.path);
     }
 
     @Override
     public int hashCode() {
-        int result = fileName.hashCode();
-        result = 31 * result + path.hashCode();
-        result = 31 * result + (isDirectory ? 1 : 0);
-        return result;
+        return path.hashCode();
+    }
+
+    @Override
+    public int compareTo(FileEntity o) {
+        return path.compareTo(o.path);
+    }
+
+    @Override
+    public String toString() {
+        return "FileEntity{" +
+                "name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", isDirectory=" + isDirectory +
+                ", mimeType='" + mimeType + '\'' +
+                '}';
     }
 }

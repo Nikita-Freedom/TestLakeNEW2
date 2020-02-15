@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">TestLake</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="server_url">Server URL</string>
+    <string name="edit_server_url">Edit server URL</string>
+    <string name="empty_server_url">(None)</string>
+    <string name="server_connect_status_template">&#10003; %1$s</string>
+    <string name="server_connect_status_checking">Checking&#8230;</string>
+    <string name="server_connect_status_ok">Status: OK</string>
+    <string name="check_server_url">Check server URL</string>
+    <string name="error_no_files">No files</string>
 </resources>

@@ -1,18 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
+        <import type="android.view.View" />
+        <import type="android.text.TextUtils" />
+        <import type="com.example.testlake.ui.MainViewModel" />
+        <import type="com.example.testlake.ui.MainViewModel.CheckServerState" />
+        <import type="com.example.testlake.ui.MainActivity" />
+        <variable
+            name="viewModel"
+            type="com.example.testlake.ui.MainViewModel" />
+    </data>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.MainActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:layout_marginEnd="96dp"
+                android:layout_alignParentStart="true"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/server_url"
+                    android:textColor="?attr/colorSecondary"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+                <TextView
+                    android:id="@+id/url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@{TextUtils.isEmpty(viewModel.url) ? @string/empty_server_url : viewModel.url}"
+                    android:textIsSelectable="true"
+                    style="@style/TextAppearance.MaterialComponents.Body1" />
+
+                <TextView
+                    android:id="@+id/server_connect_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/server_connect_status_template(viewModel.checkState.msg)}"
+                    android:visibility="@{viewModel.checkState.status == CheckServerState.Status.UNKNOWN ? View.GONE : View.VISIBLE}"
+                    android:textColor="@{MainActivity.getServerStatusColor(context, viewModel.checkState)}"
+                    style="@style/TextAppearance.MaterialComponents.Caption" />
+            </LinearLayout>
+
+
+            <ImageButton
+                android:id="@+id/edit_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_toStartOf="@+id/check_url"
+                android:layout_centerVertical="true"
+                android:background="@drawable/transparent_round_ripple"
+                android:contentDescription="@string/edit_server_url"
+                app:srcCompat="@drawable/ic_edit_grey600_24dp" />
+
+            <ImageButton
+                android:id="@+id/check_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_marginStart="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/transparent_round_ripple"
+                android:contentDescription="@string/check_server_url"
+                app:srcCompat="@drawable/ic_refresh_grey600_24dp" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>
