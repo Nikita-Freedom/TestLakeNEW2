@@ -21,7 +21,7 @@ import com.example.testlake.R;
 import com.example.testlake.core.utils.Utils;
 import com.example.testlake.databinding.DialogEditServerUrlBinding;
 import com.example.testlake.storage.SettingsRepository;
-
+// Диалоговое окно для редактирования URL сервера
 public class EditServerUrlDialog extends DialogFragment {
 
     private AppCompatActivity activity;

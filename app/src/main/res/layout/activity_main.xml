@@ -59,6 +59,12 @@
                     android:visibility="@{viewModel.checkState.status == CheckServerState.Status.UNKNOWN ? View.GONE : View.VISIBLE}"
                     android:textColor="@{MainActivity.getServerStatusColor(context, viewModel.checkState)}"
                     style="@style/TextAppearance.MaterialComponents.Caption" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="считать штрихкод"
+                    android:gravity="center"
+                    android:id="@+id/btnscan" />
             </LinearLayout>
 
 
@@ -84,6 +90,9 @@
                 android:background="@drawable/transparent_round_ripple"
                 android:contentDescription="@string/check_server_url"
                 app:srcCompat="@drawable/ic_refresh_grey600_24dp" />
+
         </RelativeLayout>
+
     </FrameLayout>
+
 </layout>

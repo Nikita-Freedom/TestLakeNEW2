@@ -32,7 +32,7 @@ public class SettingsRepository {
     }
 
     private static class Default {
-        static final String serverUrl = "http://localhost/test";
+        static final String serverUrl = "http://a900350z.beget.tech/";
     }
 
     public String serverUrl() {

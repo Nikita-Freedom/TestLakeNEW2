@@ -24,7 +24,7 @@ import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
 public class ReadableHttpConnection extends InputStream {
 
     private static final int MAX_REDIRECTS = 5;
-    private static final int DEFAULT_TIMEOUT = (int)(20 * SECOND_IN_MILLIS);
+    private static final int DEFAULT_TIMEOUT = (int)(50 * SECOND_IN_MILLIS);
 
     private URL url;
     private TLSSocketFactory socketFactory;

@@ -21,7 +21,7 @@
 package com.example.testlake.ui;
 
 /*
- * The basic callback interface with codes and functions, returned by fragments.
+ * Базовый интерфейс callback с методами, возвращаемыми фрагментами.
  */
 
 import android.content.Intent;
