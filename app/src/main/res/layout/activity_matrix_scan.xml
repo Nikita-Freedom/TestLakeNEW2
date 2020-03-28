@@ -11,14 +11,35 @@
         android:id="@+id/data_capture_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
+<ImageView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/img"
+    tools:ignore="MissingConstraints" />
     <Button
         android:id="@+id/done_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="делано"
+        android:text="сканировать штрихкод"
         android:textAllCaps="true"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:backgroundTint="@color/colorAccent"/>
+    <Button
+        android:id="@+id/done_button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="сохранить штрихкод"
+        android:textAllCaps="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="@android:color/white"

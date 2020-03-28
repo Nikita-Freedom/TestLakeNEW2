@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class ResultsActivity extends AppCompatActivity {
-
+    //private static final int CAM_REQUEST=1313;
     public static final int RESULT_CODE_CLEAN = 1;
     private static final String ARG_SCAN_RESULTS = "scan-results";
 
