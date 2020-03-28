@@ -37,7 +37,7 @@
         android:id="@+id/done_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="считать снова"
+        android:text="сканировать снова"
         android:textAllCaps="true"
         android:layout_margin="16dp"
         android:textColor="@android:color/white"

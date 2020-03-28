@@ -110,12 +110,7 @@ public class ResultsActivity extends AppCompatActivity {
                     //Toast.makeText(context, "Btn is clicked111.", Toast.LENGTH_SHORT).show();
                 }
             });
-            holder.buttonDownload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                }
-            });
             holder.buttonShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -157,7 +152,6 @@ public class ResultsActivity extends AppCompatActivity {
             dataTextView = itemView.findViewById(R.id.data_text);
             typeTextView = itemView.findViewById(R.id.type_text);
             scan_result_item = itemView.findViewById(R.id.scan_result_item);
-            buttonDownload = itemView.findViewById(R.id.btndownload);
             buttonShare = itemView.findViewById(R.id.btnshare);
         }
 

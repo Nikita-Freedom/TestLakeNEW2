@@ -60,9 +60,9 @@
                     android:textColor="@{MainActivity.getServerStatusColor(context, viewModel.checkState)}"
                     style="@style/TextAppearance.MaterialComponents.Caption" />
                 <Button
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="считать штрихкод"
+                    android:text="сканировать штрихкод"
                     android:gravity="center"
                     android:id="@+id/btnscan" />
             </LinearLayout>

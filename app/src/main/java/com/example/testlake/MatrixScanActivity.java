@@ -310,10 +310,6 @@ ImageView imageView;
                 Bitmap mybitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 imageView.setImageBitmap(mybitmap);
             }
-            //Bundle extras = data.getExtras();
-            //Bitmap imagebitmap = (Bitmap) extras.get("data");
-            //imageView.setImageBitmap(imagebitmap);
-            //imageView.setImageURI(Uri.parse(imageFilePath));
             synchronized (scanResults) {
                 scanResults.clear();
             }
