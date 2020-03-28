@@ -6,12 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,16 +16,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.testlake.Scanner.ScanResult;
 import com.scandit.datacapture.barcode.data.SymbologyDescription;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
 public class ResultsActivity extends AppCompatActivity {
-    //private static final int CAM_REQUEST=1313;
     public static final int RESULT_CODE_CLEAN = 1;
     private static final String ARG_SCAN_RESULTS = "scan-results";
 
@@ -41,12 +34,12 @@ public class ResultsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-        // Setup recycler view.
+
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), LinearLayoutManager.VERTICAL));
 
-        // Receive results from previous screen and set recycler view items.
+        // Получите результаты из предыдущего экрана и установите элементы просмотра переработчика.
         final ArrayList<ScanResult> scanResults = new ArrayList<>(
                 (HashSet<ScanResult>) getIntent().getSerializableExtra(ARG_SCAN_RESULTS));
         recyclerView.setAdapter(new ScanResultsAdapter(this, scanResults));
@@ -118,7 +111,6 @@ public class ResultsActivity extends AppCompatActivity {
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_TEXT, "Штрихкод следующий:\n" + items.get(holder.getAdapterPosition()).data + "\n" + "Тип:\n" + items.get(holder.getAdapterPosition()).symbology) ;
                     sendIntent.setType("text/plain");
-
                     Intent shareIntent = Intent.createChooser(sendIntent, null);
                     startActivity(shareIntent);
                 }
@@ -144,7 +136,6 @@ public class ResultsActivity extends AppCompatActivity {
 
         private TextView dataTextView;
         private TextView typeTextView;
-        private Button  buttonDownload;
         private Button  buttonShare;
 
         ViewHolder(View itemView) {

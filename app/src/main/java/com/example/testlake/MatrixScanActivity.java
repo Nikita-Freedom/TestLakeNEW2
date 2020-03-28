@@ -19,12 +19,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-
 import com.example.testlake.Scanner.CameraPermissionActivity;
 import com.example.testlake.Scanner.ScanResult;
 import com.scandit.datacapture.barcode.data.Symbology;
@@ -41,7 +39,6 @@ import com.scandit.datacapture.core.source.CameraSettings;
 import com.scandit.datacapture.core.source.FrameSourceState;
 import com.scandit.datacapture.core.source.VideoResolution;
 import com.scandit.datacapture.core.ui.DataCaptureView;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -52,8 +49,8 @@ import java.util.Locale;
 public class MatrixScanActivity extends CameraPermissionActivity
         implements BarcodeTrackingListener {
 ImageView imageView;
-    // Enter your Scandit License key here.
-    // Your Scandit License key is available via your Scandit SDK web account.
+    // Введите здесь свой лицензионный ключ.
+    //Ваш лицензионный ключ Scandit доступен через веб-аккаунт Scandit SDK
     public static final String SCANDIT_LICENSE_KEY = "Abwu8CisNrAxLhGzHzFChC4x3h3gN0BBXDoCvalHQ3KXBSB9RmtqTw1XPQ9nR9Lqv2DKdGweA0rBf06xfGi6Hht31we8b+v4diwPq3FEQFp0Zj89h31G5nB/1Mb0JURz1UEV36gfOZQWkOYEZh1CbW0Pc/b4YXw1TnYtXoZcfu7fy774T7RN9PW2fSGnT5yvsXhHnEiMnZw7iNLaN5oJtPgpfYRFAZ/4voPaeLHJMTkUjtGgzo/VU/YohSZ6vmcyWrdS8wllCqAOgHpDDcVXna6wyRTpvxnviz/M+ULHLB/djXCZ8A7arzb2R5qX03MTMwol559OrvLjrcx+FXIJAIHFKbeLHQqBXFVxgMurNXeracilDKA9eouAiJUjfahKXYq+lFKxXaGh4Fyqf+UkSQlwc3VWB1pZzDr91I7Ba8Fxdz/V7NH488okqWNGgCSy+CYzC7Zeshtro66/qY5jBbhzHWV50bp1QHx/VTG2czjwEKnBV4QQD22rkM5sb6DFkNJ9Np+omcTsFbGOonoT6NVGNgT9V9yvtANlOHv4ROuSyHYizpli7nvI9PmnEJcUM63xlZVt5/S66OqMBXggKEId/yxQXpHJ2aQmr10aHVcaWULwV1UKnhSZCxv6kFjz5/Uzyr9ft9tPZk/SdYwlyStqB1dXipeU3wyZpJN1LAaieBIOrJ4q8IdMlUHrHsan48oQF9FWSDgAJYPQocISW+D3OfJJRsQwXmmzv3uNA7I7kMkLijr7Up+jxqaz/LCCQs+woKzoDAodgnaz9SJtBBgL+h9xj0aN8LG8rziTHIzzXn8/dZnS/g==";
     File photoFile = null;
     public static final int REQUEST_CODE_SCAN_RESULTS = 1;
@@ -71,7 +68,7 @@ ImageView imageView;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matrix_scan);
 
-        // Initialize and start the barcode recognition.
+        // Инициализируйте и запустите распознавание штрих-кода.
         initialize();
 
         Button doneButton = findViewById(R.id.done_button);
@@ -80,13 +77,14 @@ ImageView imageView;
             public void onClick(View v) {
                 synchronized (scanResults) {
                     Log.i(TAG, "КНОПКА НАЖАТА!!!!!!!!!!!!!!");
-                    // Show new screen displaying a list of all barcodes that have been scanned.
+                    // Показать новый экран со списком всех сканированных штрих-кодов.
                     Intent intent = ResultsActivity.getIntent(MatrixScanActivity.this, scanResults);
                     startActivityForResult(intent, REQUEST_CODE_SCAN_RESULTS);
                 }
             }
         });
         Button doneButton2 = findViewById(R.id.done_button2);
+
         doneButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,30 +99,20 @@ ImageView imageView;
 
         });
     }
-   // private File createImageFile() throws IOException{
-//
-   //     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-   //     String imageFileName = "IMG_" + timeStamp + "_";
-   //     File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-   //     File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-   //     imageFilePath = image.getAbsolutePath();
-//
-   //     return image;
-   // }
     private void openCameraIntent() {
         if(ContextCompat.checkSelfPermission(MatrixScanActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(MatrixScanActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }else {
             Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (pictureIntent.resolveActivity(getPackageManager()) != null) {
-                // Create the File where the photo should go
+                // Создание файла, куда должна идти фотография
                 try {
 
                     photoFile = createImageFile();
                     displayMessage(getBaseContext(), photoFile.getAbsolutePath());
                     Log.i("Mayank", photoFile.getAbsolutePath());
 
-                    // Continue only if the File was successfully created
+                    // Продолжить, только если файл был успешно создан
                     if (photoFile != null) {
                         Uri photoURI = FileProvider.getUriForFile(this,
                                 "com.example.testlake.fileprovider",
@@ -133,7 +121,7 @@ ImageView imageView;
                         startActivityForResult(pictureIntent, REQUEST_IMAGE);
                     }
                 } catch (Exception ex) {
-                    // Error occurred while creating the File
+                    //Произошла ошибка при создании файла
                     displayMessage(getBaseContext(), ex.getMessage().toString());
                 }
 
@@ -142,8 +130,7 @@ ImageView imageView;
                 displayMessage(getBaseContext(), "Nullll");
             }
         }
-            //Uri photoUri = FileProvider.getUriForFile(MatrixScanActivity.this, getPackageName() + ".provider", photoFile );
-            //pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
         }
 
     private void captureImage2() {
@@ -168,12 +155,12 @@ ImageView imageView;
     private static final String IMAGE_DIRECTORY_NAME = "VLEMONN";
     private File createImageFile4()
     {
-        // External sdcard location
+        //Расположение внешней SDCard
         File mediaStorageDir = new File(
                 Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 IMAGE_DIRECTORY_NAME);
-        // Create the storage directory if it does not exist
+        // Создаем каталог хранения, если он не существует
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 displayMessage(getBaseContext(),"Unable to create directory.");
@@ -197,33 +184,32 @@ ImageView imageView;
         Toast.makeText(context,message,Toast.LENGTH_LONG).show();
     }
     private File createImageFile() throws IOException {
-        // Create an image file name
+        //Создать имя файла изображения
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,  /* префикс */
+                ".jpg",         /* суфикс */
+                storageDir      /* директория */
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
+        //Сохранить файл: путь для использования с намерениями ACTION_VIEW
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
     private void initialize() {
-        // Create data capture context using your license key.
+        //Создается контекст захвата данных, используя ваш лицензионный ключ.
         dataCaptureContext = DataCaptureContext.forLicenseKey(SCANDIT_LICENSE_KEY);
 
-        // Use the default camera and set it as the frame source of the context.
-        // The camera is off by default and must be turned on to start streaming frames to the data
-        // capture context for recognition.
-        // See resumeFrameSource and pauseFrameSource below.
+        // Используется камера по умолчанию и устанавливается в качестве источника кадра контекста.
+        // Камера выключена по умолчанию и должна быть включена, чтобы начать потоковую передачу кадров к данным.
+        // захватить контекст для распознавания.
         camera = Camera.getDefaultCamera();
         if (camera != null) {
-            // Use the recommended camera settings for the BarcodeTracking mode.
+            //Используйте рекомендуемые настройки камеры для режима BarcodeTracking.
             CameraSettings cameraSettings = BarcodeTracking.createRecommendedCameraSettings();
-            // Adjust camera settings - set Full HD resolution.
+            // Настройте параметры камеры - установите разрешение Full HD.
             cameraSettings.setPreferredResolution(VideoResolution.FULL_HD);
             camera.applySettings(cameraSettings);
             dataCaptureContext.setFrameSource(camera);
@@ -231,14 +217,13 @@ ImageView imageView;
             throw new IllegalStateException("Sample depends on a camera, which failed to initialize.");
         }
 
-        // The barcode tracking process is configured through barcode tracking settings
-        // which are then applied to the barcode tracking instance that manages barcode tracking.
+        // Процесс отслеживания штрих-кода настраивается через настройки отслеживания штрих-кода
+        // которые затем применяются к экземпляру отслеживания штрих-кода, который управляет отслеживанием штрих-кода.
         BarcodeTrackingSettings barcodeTrackingSettings = new BarcodeTrackingSettings();
 
-        // The settings instance initially has all types of barcodes (symbologies) disabled.
-        // For the purpose of this sample we enable a very generous set of symbologies.
-        // In your own app ensure that you only enable the symbologies that your app requires
-        // as every additional enabled symbology has an impact on processing times.
+        // В экземпляре настроек изначально отключены все типы штрих-кодов (символов).
+        //В этом примере мы включили очень набор символов.
+        // поскольку каждая дополнительная включенная символика влияет на время обработки.
         HashSet<Symbology> symbologies = new HashSet<>();
         symbologies.add(Symbology.EAN13_UPCA);
         symbologies.add(Symbology.EAN8);
@@ -248,21 +233,22 @@ ImageView imageView;
         barcodeTrackingSettings.enableSymbologies(symbologies);
 
 
-        // Create barcode tracking and attach to context.
+        // Создать отслеживание штрих-кода и прикрепить к контексту.
         barcodeTracking = BarcodeTracking.forDataCaptureContext(dataCaptureContext, barcodeTrackingSettings);
 
-        // Register self as a listener to get informed of tracked barcodes.
+        // Зарегистрируйте себя в качестве слушателя, чтобы получать информацию о отслеживаемых штрих-кодах.
         barcodeTracking.addListener(this);
 
-        // To visualize the on-going barcode tracking process on screen, setup a data capture view
-        // that renders the camera preview. The view must be connected to the data capture context.
+        // Для визуализации текущего процесса отслеживания штрих-кода на экране настройте представление сбора данных.
+        // это делает предварительный просмотр камеры. Представление должно быть связано с контекстом захвата данных.
         DataCaptureView dataCaptureView = DataCaptureView.newInstance(this, dataCaptureContext);
 
-        // Add a barcode tracking overlay to the data capture view to render the tracked barcodes on
-        // top of the video preview. This is optional, but recommended for better visual feedback.
+        //
+        // Добавьте наложение отслеживания штрих-кода в представление захвата данных, чтобы отобразить отслеживаемые штрих-коды на
+        // верхней части предварительного просмотра видео. Это необязательно, но рекомендуется для лучшей визуальной обратной связи.
         BarcodeTrackingBasicOverlay.newInstance(barcodeTracking, dataCaptureView);
 
-        // Add the DataCaptureView to the container.
+        // Добавьте DataCaptureView в контейнер.
         FrameLayout container = findViewById(R.id.data_capture_view_container);
         container.addView(dataCaptureView);
     }
@@ -274,10 +260,10 @@ ImageView imageView;
     }
 
     private void pauseFrameSource() {
-        // Switch camera off to stop streaming frames.
-        // The camera is stopped asynchronously and will take some time to completely turn off.
-        // Until it is completely stopped, it is still possible to receive further results, hence
-        // it's a good idea to first disable barcode tracking as well.
+        //Выключите камеру, чтобы остановить потоковую передачу кадров.
+        // Камера останавливается асинхронно и для полного выключения потребуется некоторое время.
+        // Пока он полностью не остановлен, все еще возможно получить дальнейшие результаты, следовательно
+        //также неплохо сначала отключить отслеживание штрих-кода.
         barcodeTracking.setEnabled(false);
         camera.switchToDesiredState(FrameSourceState.OFF, null);
     }
@@ -286,8 +272,9 @@ ImageView imageView;
     protected void onResume() {
         super.onResume();
 
-        // Check for camera permission and request it, if it hasn't yet been granted.
-        // Once we have the permission the onCameraPermissionGranted() method will be called.
+        //
+        //Проверьте разрешение камеры и запросите его, если оно еще не было предоставлено.
+        // Как только мы получим разрешение, будет вызван метод onCameraPermissionGranted ().
         requestCameraPermission();
     }
 
@@ -297,8 +284,8 @@ ImageView imageView;
     }
 
     private void resumeFrameSource() {
-        // Switch camera on to start streaming frames.
-        // The camera is started asynchronously and will take some time to completely turn on.
+        // Включите камеру, чтобы начать потоковую передачу кадров.
+        // Камера запускается асинхронно и для полного включения потребуется некоторое время.
         barcodeTracking.setEnabled(true);
         camera.switchToDesiredState(FrameSourceState.ON, null);
     }
@@ -331,16 +318,13 @@ ImageView imageView;
 
     @Override
     public void onObservationStarted(@NonNull BarcodeTracking barcodeTracking) {
-        // Nothing to do.
     }
 
     @Override
     public void onObservationStopped(@NonNull BarcodeTracking barcodeTracking) {
-        // Nothing to do.
     }
 
-    // This function is called whenever objects are updated and it's the right place to react to
-    // the tracking results.
+    // Эта функция вызывается всякий раз, когда объекты обновляются, и это правильное место, чтобы реагировать на результаты отслеживания.
     @Override
     public void onSessionUpdated(
             @NonNull BarcodeTracking mode,
