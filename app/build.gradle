@@ -4,6 +4,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.example.testlake"
+        multiDexEnabled true
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -16,6 +17,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+        exclude 'META-INF/Sign.CP'
+        exclude 'META-INF/Digest.CP'
+        exclude 'META-INF/LICENSE'
+    }
+    dexOptions {
+        preDexLibraries = false
+        additionalParameters=['--core-library']
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -46,4 +56,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.android.support:recyclerview-v7:29.0.0'
     implementation 'com.android.support:cardview-v7:29.0.0'
+    compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
+    compile 'com.quicklib:quicklib-multidex:1.0.1'
+    compile 'com.fasterxml.jackson.jr:jackson-jr-retrofit2:2.9.0.pr4'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
 }

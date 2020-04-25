@@ -32,7 +32,7 @@ public class SettingsRepository {
     }
 
     private static class Default {
-        static final String serverUrl = "http://a900350z.beget.tech/";
+        static final String serverUrl = "https://ngate-complete20181220/test_resource";
     }
 
     public String serverUrl() {

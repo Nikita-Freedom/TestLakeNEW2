@@ -65,6 +65,11 @@
                     android:text="сканировать штрихкод"
                     android:gravity="center"
                     android:id="@+id/btnscan" />
+                <Button
+                    android:id="@+id/btExamplesExecute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Выполнить запрос"/>
             </LinearLayout>
 
 

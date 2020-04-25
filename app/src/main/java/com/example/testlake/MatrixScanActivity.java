@@ -51,7 +51,7 @@ public class MatrixScanActivity extends CameraPermissionActivity
 ImageView imageView;
     // Введите здесь свой лицензионный ключ.
     //Ваш лицензионный ключ Scandit доступен через веб-аккаунт Scandit SDK
-    public static final String SCANDIT_LICENSE_KEY = "Abwu8CisNrAxLhGzHzFChC4x3h3gN0BBXDoCvalHQ3KXBSB9RmtqTw1XPQ9nR9Lqv2DKdGweA0rBf06xfGi6Hht31we8b+v4diwPq3FEQFp0Zj89h31G5nB/1Mb0JURz1UEV36gfOZQWkOYEZh1CbW0Pc/b4YXw1TnYtXoZcfu7fy774T7RN9PW2fSGnT5yvsXhHnEiMnZw7iNLaN5oJtPgpfYRFAZ/4voPaeLHJMTkUjtGgzo/VU/YohSZ6vmcyWrdS8wllCqAOgHpDDcVXna6wyRTpvxnviz/M+ULHLB/djXCZ8A7arzb2R5qX03MTMwol559OrvLjrcx+FXIJAIHFKbeLHQqBXFVxgMurNXeracilDKA9eouAiJUjfahKXYq+lFKxXaGh4Fyqf+UkSQlwc3VWB1pZzDr91I7Ba8Fxdz/V7NH488okqWNGgCSy+CYzC7Zeshtro66/qY5jBbhzHWV50bp1QHx/VTG2czjwEKnBV4QQD22rkM5sb6DFkNJ9Np+omcTsFbGOonoT6NVGNgT9V9yvtANlOHv4ROuSyHYizpli7nvI9PmnEJcUM63xlZVt5/S66OqMBXggKEId/yxQXpHJ2aQmr10aHVcaWULwV1UKnhSZCxv6kFjz5/Uzyr9ft9tPZk/SdYwlyStqB1dXipeU3wyZpJN1LAaieBIOrJ4q8IdMlUHrHsan48oQF9FWSDgAJYPQocISW+D3OfJJRsQwXmmzv3uNA7I7kMkLijr7Up+jxqaz/LCCQs+woKzoDAodgnaz9SJtBBgL+h9xj0aN8LG8rziTHIzzXn8/dZnS/g==";
+   // public static final String SCANDIT_LICENSE_KEY = "Abwu8CisNrAxLhGzHzFChC4x3h3gN0BBXDoCvalHQ3KXBSB9RmtqTw1XPQ9nR9Lqv2DKdGweA0rBf06xfGi6Hht31we8b+v4diwPq3FEQFp0Zj89h31G5nB/1Mb0JURz1UEV36gfOZQWkOYEZh1CbW0Pc/b4YXw1TnYtXoZcfu7fy774T7RN9PW2fSGnT5yvsXhHnEiMnZw7iNLaN5oJtPgpfYRFAZ/4voPaeLHJMTkUjtGgzo/VU/YohSZ6vmcyWrdS8wllCqAOgHpDDcVXna6wyRTpvxnviz/M+ULHLB/djXCZ8A7arzb2R5qX03MTMwol559OrvLjrcx+FXIJAIHFKbeLHQqBXFVxgMurNXeracilDKA9eouAiJUjfahKXYq+lFKxXaGh4Fyqf+UkSQlwc3VWB1pZzDr91I7Ba8Fxdz/V7NH488okqWNGgCSy+CYzC7Zeshtro66/qY5jBbhzHWV50bp1QHx/VTG2czjwEKnBV4QQD22rkM5sb6DFkNJ9Np+omcTsFbGOonoT6NVGNgT9V9yvtANlOHv4ROuSyHYizpli7nvI9PmnEJcUM63xlZVt5/S66OqMBXggKEId/yxQXpHJ2aQmr10aHVcaWULwV1UKnhSZCxv6kFjz5/Uzyr9ft9tPZk/SdYwlyStqB1dXipeU3wyZpJN1LAaieBIOrJ4q8IdMlUHrHsan48oQF9FWSDgAJYPQocISW+D3OfJJRsQwXmmzv3uNA7I7kMkLijr7Up+jxqaz/LCCQs+woKzoDAodgnaz9SJtBBgL+h9xj0aN8LG8rziTHIzzXn8/dZnS/g==";
     File photoFile = null;
     public static final int REQUEST_CODE_SCAN_RESULTS = 1;
     private String imageFilePath = "";
@@ -200,7 +200,7 @@ ImageView imageView;
     }
     private void initialize() {
         //Создается контекст захвата данных, используя ваш лицензионный ключ.
-        dataCaptureContext = DataCaptureContext.forLicenseKey(SCANDIT_LICENSE_KEY);
+        //dataCaptureContext = DataCaptureContext.forLicenseKey(SCANDIT_LICENSE_KEY);
 
         // Используется камера по умолчанию и устанавливается в качестве источника кадра контекста.
         // Камера выключена по умолчанию и должна быть включена, чтобы начать потоковую передачу кадров к данным.

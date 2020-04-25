@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 public class Utils {
 
-    public static final String HTTP_PREFIX = "http";
+    public static final String HTTP_PREFIX = "https";
 
     public static int getAttributeColor(@NonNull Context context, int attributeId)
     {

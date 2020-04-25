@@ -51,6 +51,7 @@ public class FileRepository {
         }
 
         ArrayList<FileEntity> fileList = new ArrayList<>();
+       // System.setProperty("javax.net.ssl.trustStore", "/path/to/web2.uconn.edu.jks");
         Document document = Jsoup.connect(makeUrl(dir)).get();
 
         for (Element e : document.select("a[href]")) {

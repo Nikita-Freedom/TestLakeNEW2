@@ -1,14 +1,30 @@
 package com.example.testlake.core;
 
+import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.example.testlake.TLS.ClientSample;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchProviderException;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import ru.CryptoPro.JCSP.support.BKSTrustStore;
+import ru.cprocsp.ACSP.tools.common.Constants;
 
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
 import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
@@ -30,17 +46,33 @@ public class ReadableHttpConnection extends InputStream {
     private TLSSocketFactory socketFactory;
     private InputStream is;
     private HttpURLConnection conn;
-
+    Context context;
     public ReadableHttpConnection(String url) throws IOException, GeneralSecurityException {
+        ClientSample clientSample = new ClientSample();
         // Кодируем пробелы. Некоторые версии Android некорректно работают с пробелами в URL
         url = url.replace(" ", "%20");
         this.url = new URL(url);
         this.socketFactory = new TLSSocketFactory();
-        run();
+        run(context);
     }
 
-    private void run() throws IOException {
+    private void run(@NotNull Context context) throws IOException {
         try {
+            KeyStore ts = KeyStore.getInstance(BKSTrustStore.STORAGE_TYPE, BouncyCastleProvider.PROVIDER_NAME);
+
+            String trustStorePath = context.getApplicationInfo().dataDir + File.separator + BKSTrustStore.STORAGE_DIRECTORY + File.separator + BKSTrustStore.STORAGE_FILE_TRUST;
+
+            //trustStorePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator;
+
+            FileInputStream stream = new FileInputStream(trustStorePath);
+
+            try {
+                ts.load(stream, BKSTrustStore.STORAGE_PASSWORD);
+            } catch (Exception e) {
+                Log.e(Constants.APP_LOGGER_TAG,"ХУЙ", e);
+            }
+
+            KeyStore ks = null;
             int redirectionCount = 0;
             while (redirectionCount++ < MAX_REDIRECTS) {
                 conn = (HttpURLConnection)url.openConnection();
@@ -77,6 +109,10 @@ public class ReadableHttpConnection extends InputStream {
         } catch (IOException e) {
             disconnect();
             throw e;
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
         }
     }
 

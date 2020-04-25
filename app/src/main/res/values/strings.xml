@@ -10,4 +10,16 @@
     <string name="server_connect_status_ok">Status: OK</string>
     <string name="check_server_url">Check server URL</string>
     <string name="error_no_files">No files</string>
+
+    <string name="ExamplesInstallCAdESCAWarning">
+        You have chosen CAdES example which requires CA certificates to being installed.
+        A special example %s will install the certificates. You can also install the
+        certificates using Settings > Security on your device. Press Execute to fulfil
+        the example.
+    </string>
+    <string name="StatusField">Status</string>
+    <string name="StatusUnknown">unknown</string>
+    <string name="StatusOK">done</string>
+    <string name="StatusError">failed</string>
+    <string name="SettingsCopy">Copy</string>
 </resources>

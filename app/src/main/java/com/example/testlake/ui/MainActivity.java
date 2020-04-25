@@ -3,6 +3,7 @@ package com.example.testlake.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -16,32 +17,64 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.testlake.MatrixScanActivity;
 import com.example.testlake.R;
+import com.example.testlake.TLSResource.ContainerAdapter;
+import com.example.testlake.TLS.HttpTSLSreviceJava;
+import com.example.testlake.TLSResource.ICAdESData;
+import com.example.testlake.TLS.InstallCAdESTestTrustCertExample;
+import com.example.testlake.TLSResource.LogCallback;
+import com.example.testlake.TLSResource.ProviderType;
 import com.example.testlake.core.utils.Utils;
 import com.example.testlake.databinding.ActivityMainBinding;
+
+import java.io.File;
+import java.security.Provider;
+import java.security.Security;
+
+import ru.CryptoPro.CAdES.CAdESConfig;
+import ru.CryptoPro.JCSP.CSPConfig;
+import ru.CryptoPro.JCSP.JCSP;
+import ru.CryptoPro.JCSP.support.BKSTrustStore;
+import ru.CryptoPro.reprov.RevCheck;
+import ru.CryptoPro.ssl.util.cpSSLConfig;
+import ru.cprocsp.ACSP.tools.common.Constants;
 
 public class MainActivity extends AppCompatActivity {
     //Объявляем статическую константу для редактирование URL в диалоговом окне
     private static final String TAG_EDIT_SERVER_URL_DIALOG = "edit_server_url_dialog";
     Button button;
+    Button buttonQR;
     private ActivityMainBinding binding;
     private MainViewModel viewModel;
     private EditServerUrlDialog editServerUrlDialog;
+
+    /**
+     * Объект для вывода логов и смены статуса.
+     */
+    private static LogCallback logCallback = null;
+
+    /**
+     * Java-провайдер Java CSP.
+     */
+    private static Provider defaultKeyStoreProvider = null;
+    private boolean cAdESCAInstalled = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FragmentManager fm = getSupportFragmentManager();
         editServerUrlDialog = (EditServerUrlDialog)fm.findFragmentByTag(TAG_EDIT_SERVER_URL_DIALOG);
-
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel(viewModel);
-
         binding.editUrl.setOnClickListener((v) -> showEditServerUrlDialog());
         binding.checkUrl.setOnClickListener((v) -> viewModel.forceCheckServer());
-
         viewModel.observeCheckingServer().observe(this, viewModel::handleCheckingServer);
         viewModel.forceCheckServer();
+
+
+        final Context context = this;
+
         button = (Button) findViewById(R.id.btnscan);
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
@@ -53,10 +86,294 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+
+
+        Button btExecuteButton = (Button) findViewById(R.id.btExamplesExecute);
+        // Выполнение примера.
+        btExecuteButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Thread thread = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try  {
+                            InstallCAdESTestTrustCertExample inst = new InstallCAdESTestTrustCertExample(context);
+                            inst.getResult();
+                            HttpTSLSreviceJava ht = new HttpTSLSreviceJava();
+                            ht.execute(context);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                thread.start();
+            }
+
+        });
+
         // присвоим обработчик кнопке OK (btnOk)
         button.setOnClickListener(oclBtnOk);
 
+        // 2. Инициализация провайдеров: CSP и java-провайдеров
+        // (Обязательная часть).
+
+        if (!initCSPProviders()) {
+            Log.i(Constants.APP_LOGGER_TAG, "Couldn't initialize CSP.");
+            Toast toast = Toast.makeText(getApplicationContext(), "Couldn't initialize CSP.", Toast.LENGTH_LONG);
+            toast.show();
+            return;
+        } // if
+
+        initJavaProviders();
+        //checkCAdESCACertsAndInstall();
+
     }
+    //private void checkCAdESCACertsAndInstall() {
+//
+    //    // Установка корневых сертификатов для CAdES примеров.
+    //    if (!cAdESCAInstalled) {
+//
+    //        String message = String.format(getString(R.string.ExamplesInstallCAdESCAWarning),
+    //                "InstallCAdESTestTrustCertExample");
+//
+    //        ContainerAdapter adapter = new ContainerAdapter(null, false);
+//
+    //        adapter.setProviderType(ProviderType.currentProviderType());
+    //        adapter.setResources(getResources());
+//
+    //        try {
+    //            //File trustStoreFile = null;
+    //            //X509Certificate trustCert = null;
+    //            //LogCallback callback = null;
+    //            //boolean needPrintAliases;
+    //            ICAdESData installRootCert = new InstallCAdESTestTrustCertExample(adapter);
+    //            InstallCAdESTestTrustCertExample installCAdESTestTrustCertExample = new InstallCAdESTestTrustCertExample(adapter);
+    //            // Если сертификаты не установлены, сообщаем об
+    //            // этом и устанавливаем их.
+    //            if (!installRootCert.isAlreadyInstalled()) {
+//
+    //                // Предупреждение о выполнении установки.
+//
+    //                MainActivity.getLogCallback().clear();
+    //                MainActivity.getLogCallback().log("*** Forced installation of CA certificates (CAdES) ***");
+//
+    //                // Установка.
+    //                installRootCert.getResult(MainActivity.getLogCallback());
+    //                //installCAdESTestTrustCertExample.saveTrustCert(trustStoreFile, trustCert, callback, true);
+    //                //installCAdESTestTrustCertExample.getResult(callback);
+//
+    //            } // if
+//
+    //            cAdESCAInstalled = true;
+//
+    //        } catch (Exception e) {
+    //            MainActivity.getLogCallback().setStatusFailed();
+    //            Log.e(Constants.APP_LOGGER_TAG, e.getMessage(), e);
+    //        }
+//
+    //    }
+//
+    //}
+
+
+
+    /************************ Инициализация провайдера ************************/
+
+    /**
+     * Инициализация CSP провайдера.
+     *
+     * @return True в случае успешной инициализации.
+     */
+    private boolean initCSPProviders() {
+
+        // Инициализация провайдера CSP. Должна выполняться
+        // один раз в главном потоке приложения, т.к. использует
+        // статические переменные.
+        //
+        // 1. Создаем инфраструктуру CSP и копируем ресурсы
+        // в папку. В случае ошибки мы, например, выводим окошко
+        // (или как-то иначе сообщаем) и завершаем работу.
+
+        int initCode = CSPConfig.init(this);
+        boolean initOk = initCode == CSPConfig.CSP_INIT_OK;
+
+        // Если инициализация не удалась, то сообщим об ошибке.
+        if (!initOk) {
+
+            switch (initCode) {
+
+                // Не передан контекст приложения (null). Он необходим,
+                // чтобы произвести копирование ресурсов CSP, создание
+                // папок, смену директории CSP и т.п.
+                case CSPConfig.CSP_INIT_CONTEXT:
+                    //errorMessage(this, "Couldn't initialize context.");
+                    Toast toast = Toast.makeText(getApplicationContext(), "Couldn't initialize Context.", Toast.LENGTH_LONG);
+                    toast.show();
+                    break;
+
+                /**
+                 * Не удается создать инфраструктуру CSP (папки): нет
+                 * прав (нарушен контроль целостности) или ошибки.
+                 * Подробности в logcat.
+                 */
+                case CSPConfig.CSP_INIT_CREATE_INFRASTRUCTURE:
+                    //errorMessage(this, "Couldn't create CSP infrastructure.");
+                    break;
+
+                /**
+                 * Не удается скопировать все или часть ресурсов CSP -
+                 * конфигурацию, лицензию (папки): нет прав (нарушен
+                 * контроль целостности) или ошибки.
+                 * Подробности в logcat.
+                 */
+                case CSPConfig.CSP_INIT_COPY_RESOURCES:
+                    //errorMessage(this, "Couldn't copy CSP resources.");
+                    break;
+
+                /**
+                 * Не удается задать рабочую директорию для загрузки
+                 * CSP. Подробности в logcat.
+                 */
+                case CSPConfig.CSP_INIT_CHANGE_WORK_DIR:
+                    //errorMessage(this, "Couldn't change CSP working directory.");
+                    break;
+
+                /**
+                 * Неправильная лицензия.
+                 */
+                case CSPConfig.CSP_INIT_INVALID_LICENSE:
+                    //errorMessage(this, "Invalid CSP serial number.");
+                    break;
+
+                /**
+                 * Не удается создать хранилище доверенных сертификатов
+                 * для CAdES API.
+                 */
+                case CSPConfig.CSP_TRUST_STORE_FAILED:
+                    //errorMessage(this, "Couldn't create trust store for CAdES API.");
+                    break;
+
+            } // switch
+
+        } // if
+
+        return initOk;
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        // Необходимо для отображения диалоговых окон
+        // ДСЧ, ввода пин-кода и сообщений.
+        CSPConfig.registerActivityContext(this);
+    }
+
+    /**
+     * Добавление нативного провайдера JCSP, SSL-провайдера
+     * и Revocation-провайдера в список Security.
+     * Инициализируется JCPxml, CAdES.
+     *
+     * Происходит один раз при инициализации.
+     * Возможно только после инициализации в CSPConfig!
+     *
+     */
+    private void initJavaProviders() {
+
+        // Загрузка JTLS (TLS).
+
+        // Необходимо переопределить свойства, чтобы использовались
+        // менеджеры из cpSSL, а не Harmony.
+
+        Security.setProperty("ssl.KeyManagerFactory.algorithm",
+                ru.CryptoPro.ssl.Provider.KEYMANGER_ALG);
+        Security.setProperty("ssl.TrustManagerFactory.algorithm",
+                ru.CryptoPro.ssl.Provider.KEYMANGER_ALG);
+
+        Security.setProperty("ssl.SocketFactory.provider",
+                "ru.CryptoPro.ssl.SSLSocketFactoryImpl");
+        Security.setProperty("ssl.ServerSocketFactory.provider",
+                "ru.CryptoPro.ssl.SSLServerSocketFactoryImpl");
+
+
+
+
+        if (Security.getProvider(ru.CryptoPro.ssl.Provider.PROVIDER_NAME) == null) {
+            Security.addProvider(new ru.CryptoPro.ssl.Provider());
+        } // if
+
+        // Провайдер хеширования, подписи, шифрования по умолчанию.
+        cpSSLConfig.setDefaultSSLProvider(JCSP.PROVIDER_NAME);
+
+        // Загрузка Revocation Provider (CRL, OCSP).
+
+        if (Security.getProvider(RevCheck.PROVIDER_NAME) == null) {
+            Security.addProvider(new RevCheck());
+        } // if
+
+        // Инициализация XML DSig (хеш, подпись).
+
+//        XmlInit.init();
+
+        // Параметры для Java TLS и CAdES API.
+
+        // Провайдер CAdES API по умолчанию.
+        CAdESConfig.setDefaultProvider(JCSP.PROVIDER_NAME);
+
+        // Включаем возможность онлайновой проверки статуса сертификата.
+        System.setProperty("com.sun.security.enableCRLDP", "true");
+        System.setProperty("com.ibm.security.enableCRLDP", "true");
+
+        // Настройки TLS для генерации контейнера и выпуска сертификата
+        // в УЦ 2.0, т.к. обращение к УЦ 2.0 будет выполняться по протоколу
+        // HTTPS и потребуется авторизация по сертификату. Указываем тип
+        // хранилища с доверенным корневым сертификатом, путь к нему и пароль.
+
+        final String trustStorePath = getApplicationInfo().dataDir + File.separator +
+                BKSTrustStore.STORAGE_DIRECTORY + File.separator + BKSTrustStore.STORAGE_FILE_TRUST;
+
+        final String trustStorePassword = String.valueOf(BKSTrustStore.STORAGE_PASSWORD);
+        Log.d(Constants.APP_LOGGER_TAG, "Default trust store: " + trustStorePath);
+
+        System.setProperty("javax.net.ssl.trustStoreType", BKSTrustStore.STORAGE_TYPE);
+        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
+
+    }
+
+
+    /************************** Служебные функции ****************************/
+
+    /**
+     * Получение объекта для вывода логов и смены статуса.
+     *
+     * @return объект.
+     */
+    public static LogCallback getLogCallback() {
+        return logCallback;
+    }
+
+    /**
+     * Получение объекта провайдера Java CSP.
+     *
+     * @return провайдер Java CSP.
+     */
+    public static Provider getDefaultKeyStoreProvider() {
+        return defaultKeyStoreProvider;
+    }
+
+
+
+
+
+
+
 
     // Показываем диалоговое окно
     private void showEditServerUrlDialog() {
