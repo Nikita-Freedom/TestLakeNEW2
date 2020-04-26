@@ -8,16 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.testlake.core.ReadableHttpConnection;
-import com.example.testlake.core.utils.Utils;
+import com.example.testlake.core.utils.FileUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.security.GeneralSecurityException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +55,12 @@ public class FileRepository {
 
         ArrayList<FileEntity> fileList = new ArrayList<>();
        // System.setProperty("javax.net.ssl.trustStore", "/path/to/web2.uconn.edu.jks");
-        Document document = Jsoup.connect(makeUrl(dir))
-                .sslSocketFactory(Utils.makeSSLSocketFactory(appContext))
-                .get();
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        FileUtils.copyBytes(new ReadableHttpConnection(appContext, makeUrl(dir)), os);
+
+        Document document = Jsoup.parse(new String(os.toByteArray(), StandardCharsets.UTF_8));
+        os.close();
 
         for (Element e : document.select("a[href]")) {
             // Игнорируем переход в папку уровнем выше
