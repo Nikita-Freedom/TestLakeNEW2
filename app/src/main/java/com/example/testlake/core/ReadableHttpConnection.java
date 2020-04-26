@@ -58,21 +58,6 @@ public class ReadableHttpConnection extends InputStream {
 
     private void run(@NotNull Context context) throws IOException {
         try {
-            KeyStore ts = KeyStore.getInstance(BKSTrustStore.STORAGE_TYPE, BouncyCastleProvider.PROVIDER_NAME);
-
-            String trustStorePath = context.getApplicationInfo().dataDir + File.separator + BKSTrustStore.STORAGE_DIRECTORY + File.separator + BKSTrustStore.STORAGE_FILE_TRUST;
-
-            //trustStorePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator;
-
-            FileInputStream stream = new FileInputStream(trustStorePath);
-
-            try {
-                ts.load(stream, BKSTrustStore.STORAGE_PASSWORD);
-            } catch (Exception e) {
-                Log.e(Constants.APP_LOGGER_TAG,"ХУЙ", e);
-            }
-
-            KeyStore ks = null;
             int redirectionCount = 0;
             while (redirectionCount++ < MAX_REDIRECTS) {
                 conn = (HttpURLConnection)url.openConnection();
@@ -109,10 +94,6 @@ public class ReadableHttpConnection extends InputStream {
         } catch (IOException e) {
             disconnect();
             throw e;
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
         }
     }
 
