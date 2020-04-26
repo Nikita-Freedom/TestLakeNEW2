@@ -107,7 +107,7 @@ public class FileProvider extends DocumentsProvider {
         try {
             loadFileList(parent);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FileNotFoundException("Unable to get files list: " + Log.getStackTraceString(e));
         }
         for (FileEntity file : fileCache.values()) {
@@ -170,7 +170,7 @@ public class FileProvider extends DocumentsProvider {
                 // Читаем из InputStream соединения с сервером и записываем во временный файл
                 FileUtils.copyBytes(repo.openFile(file), new FileOutputStream(tmp));
 
-            } catch (IOException | GeneralSecurityException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Failed to read file with id " +
                         documentId + ": " + Log.getStackTraceString(e));
             }
@@ -217,7 +217,7 @@ public class FileProvider extends DocumentsProvider {
     /**
      * Загружаем список файлов и заполняем кеш
      */
-    private void loadFileList(FileEntity dir) throws IOException {
+    private void loadFileList(FileEntity dir) throws Exception {
         cleanTmpDir();
         fileCache.clear();
 

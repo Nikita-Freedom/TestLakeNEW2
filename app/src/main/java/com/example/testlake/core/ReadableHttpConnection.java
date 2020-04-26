@@ -1,30 +1,22 @@
 package com.example.testlake.core;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.testlake.TLS.ClientSample;
+import com.example.testlake.core.utils.Utils;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchProviderException;
 
 import javax.net.ssl.HttpsURLConnection;
-
-import ru.CryptoPro.JCSP.support.BKSTrustStore;
-import ru.cprocsp.ACSP.tools.common.Constants;
+import javax.net.ssl.SSLSocketFactory;
 
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
 import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
@@ -43,20 +35,18 @@ public class ReadableHttpConnection extends InputStream {
     private static final int DEFAULT_TIMEOUT = (int)(50 * SECOND_IN_MILLIS);
 
     private URL url;
-    private TLSSocketFactory socketFactory;
+    private SSLSocketFactory socketFactory;
     private InputStream is;
     private HttpURLConnection conn;
-    Context context;
-    public ReadableHttpConnection(String url) throws IOException, GeneralSecurityException {
-        ClientSample clientSample = new ClientSample();
+    public ReadableHttpConnection(@NonNull Context context, String url) throws Exception {
         // Кодируем пробелы. Некоторые версии Android некорректно работают с пробелами в URL
         url = url.replace(" ", "%20");
         this.url = new URL(url);
-        this.socketFactory = new TLSSocketFactory();
-        run(context);
+        this.socketFactory = Utils.makeSSLSocketFactory(context);
+        run();
     }
 
-    private void run(@NotNull Context context) throws IOException {
+    private void run() throws IOException {
         try {
             int redirectionCount = 0;
             while (redirectionCount++ < MAX_REDIRECTS) {

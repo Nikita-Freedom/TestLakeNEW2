@@ -47,7 +47,7 @@ public class CheckServerWork extends Worker {
         try {
             files = repo.getFilesList(FileEntity.ROOT);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             return Result.failure(makeResponse(url, e.toString()));
         }
 

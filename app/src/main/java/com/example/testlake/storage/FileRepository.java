@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.testlake.core.ReadableHttpConnection;
+import com.example.testlake.core.utils.Utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,6 +29,7 @@ public class FileRepository {
 
     private static FileRepository INSTANCE;
     private SettingsRepository settings;
+    private Context appContext;
 
     public static FileRepository getInstance(@NonNull Context appContext) {
         if (INSTANCE == null) {
@@ -42,17 +44,20 @@ public class FileRepository {
     }
 
     private FileRepository(Context appContext) {
+        this.appContext = appContext;
         settings = SettingsRepository.getInstance(appContext);
     }
 
-    public List<FileEntity> getFilesList(@NonNull FileEntity dir) throws IOException {
+    public List<FileEntity> getFilesList(@NonNull FileEntity dir) throws Exception {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException(dir.getPath() + "not a directory");
         }
 
         ArrayList<FileEntity> fileList = new ArrayList<>();
        // System.setProperty("javax.net.ssl.trustStore", "/path/to/web2.uconn.edu.jks");
-        Document document = Jsoup.connect(makeUrl(dir)).get();
+        Document document = Jsoup.connect(makeUrl(dir))
+                .sslSocketFactory(Utils.makeSSLSocketFactory(appContext))
+                .get();
 
         for (Element e : document.select("a[href]")) {
             // Игнорируем переход в папку уровнем выше
@@ -119,12 +124,12 @@ public class FileRepository {
         return sb.toString();
     }
 
-    public InputStream openFile(@NonNull FileEntity file) throws IOException, GeneralSecurityException {
+    public InputStream openFile(@NonNull FileEntity file) throws Exception {
         if (file.isDirectory()) {
             throw new IllegalArgumentException(file.getPath() + "not a file");
         }
 
-        return new ReadableHttpConnection(makeUrl(file));
+        return new ReadableHttpConnection(appContext, makeUrl(file));
     }
 
     @Nullable
