@@ -52,8 +52,10 @@ public class ReadableHttpConnection extends InputStream {
                 conn.setReadTimeout(DEFAULT_TIMEOUT);
                 HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
-                if (conn instanceof HttpsURLConnection)
+                if (conn instanceof HttpsURLConnection) {
                     ((HttpsURLConnection)conn).setSSLSocketFactory(socketFactory);
+                    ((HttpsURLConnection)conn).setHostnameVerifier((hostname, session) -> true);
+                }
 
                 int responseCode = conn.getResponseCode();
                 switch (responseCode) {
