@@ -4,16 +4,12 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.example.testlake.TLS.ClientSample;
 import com.example.testlake.core.utils.Utils;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.GeneralSecurityException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -54,6 +50,7 @@ public class ReadableHttpConnection extends InputStream {
                 conn.setInstanceFollowRedirects(false);
                 conn.setConnectTimeout(DEFAULT_TIMEOUT);
                 conn.setReadTimeout(DEFAULT_TIMEOUT);
+                HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
                 if (conn instanceof HttpsURLConnection)
                     ((HttpsURLConnection)conn).setSSLSocketFactory(socketFactory);
