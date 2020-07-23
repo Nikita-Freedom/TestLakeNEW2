@@ -2,48 +2,33 @@ package com.example.testlake.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.example.testlake.MatrixScanActivity;
 import com.example.testlake.R;
-import com.example.testlake.TLSResource.ContainerAdapter;
-import com.example.testlake.TLS.HttpTSLSreviceJava;
-import com.example.testlake.TLSResource.ICAdESData;
 import com.example.testlake.TLS.InstallCAdESTestTrustCertExample;
-import com.example.testlake.TLSResource.IContainers;
 import com.example.testlake.TLSResource.LogCallback;
-import com.example.testlake.TLSResource.ProviderType;
 import com.example.testlake.core.utils.Utils;
 import com.example.testlake.databinding.ActivityMainBinding;
-
 import java.io.File;
 import java.security.Provider;
 import java.security.Security;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import ru.CryptoPro.CAdES.CAdESConfig;
 import ru.CryptoPro.JCSP.CSPConfig;
 import ru.CryptoPro.JCSP.JCSP;
 import ru.CryptoPro.JCSP.support.BKSTrustStore;
 import ru.CryptoPro.reprov.RevCheck;
-import ru.CryptoPro.ssl.util.cpSSLConfig;
-import ru.cprocsp.ACSP.tools.common.CSPTool;
+import ru.CryptoPro.ssl.android.util.TLSSettings;
+import ru.CryptoPro.ssl.android.util.cpSSLConfig;
 import ru.cprocsp.ACSP.tools.common.Constants;
-import ru.cprocsp.ACSP.tools.common.RawResource;
+
 
 public class MainActivity extends AppCompatActivity {
     //Объявляем статическую константу для редактирование URL в диалоговом окне
@@ -68,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TLSSettings.setDefaultEnableRevocation(false);
+        //TLSSettings.setDefaultCRLRevocationOnline(false);
         super.onCreate(savedInstanceState);
         FragmentManager fm = getSupportFragmentManager();
         editServerUrlDialog = (EditServerUrlDialog)fm.findFragmentByTag(TAG_EDIT_SERVER_URL_DIALOG);
@@ -82,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         final Context context = this;
 
-        button = (Button) findViewById(R.id.btnscan);
+        //button = (Button) findViewById(R.id.btnscan);
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MatrixScanActivity.class );
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "Btn is clicked.", Toast.LENGTH_SHORT).show();
+                //Intent intent = new Intent(MainActivity.this, MatrixScanActivity.class );
+                //startActivity(intent);
+                //Toast.makeText(getApplicationContext(), "Btn is clicked.", Toast.LENGTH_SHORT).show();
 
             }
         };
@@ -109,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
                         try  {
                             InstallCAdESTestTrustCertExample inst = new InstallCAdESTestTrustCertExample(context);
                             inst.getResult();
-                            HttpTSLSreviceJava ht = new HttpTSLSreviceJava();
-                            ht.execute(context);
+                           // HttpTSLSreviceJava ht = new HttpTSLSreviceJava();
+//                            ht.execute(context);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -124,152 +111,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // присвоим обработчик кнопке OK (btnOk)
-        button.setOnClickListener(oclBtnOk);
+//        button.setOnClickListener(oclBtnOk);
 
         // 2. Инициализация провайдеров: CSP и java-провайдеров
         // (Обязательная часть).
 
-        if (!initCSPProviders()) {
-            Log.i(Constants.APP_LOGGER_TAG, "Couldn't initialize CSP.");
-            Toast toast = Toast.makeText(getApplicationContext(), "Couldn't initialize CSP.", Toast.LENGTH_LONG);
-            toast.show();
+        if (!initProviders()) {
+
+            Log.e(Constants.APP_LOGGER_TAG, "Couldn't initialize CSP.");
             return;
-        } // if
 
-        initJavaProviders();
-        //checkCAdESCACertsAndInstall();
+        }
     }
-    //private void checkCAdESCACertsAndInstall() {
-//
-    //    // Установка корневых сертификатов для CAdES примеров.
-    //    if (!cAdESCAInstalled) {
-//
-    //        String message = String.format(getString(R.string.ExamplesInstallCAdESCAWarning),
-    //                "InstallCAdESTestTrustCertExample");
-//
-    //        ContainerAdapter adapter = new ContainerAdapter(null, false);
-//
-    //        adapter.setProviderType(ProviderType.currentProviderType());
-    //        adapter.setResources(getResources());
-//
-    //        try {
-    //            //File trustStoreFile = null;
-    //            //X509Certificate trustCert = null;
-    //            //LogCallback callback = null;
-    //            //boolean needPrintAliases;
-    //            ICAdESData installRootCert = new InstallCAdESTestTrustCertExample(adapter);
-    //            InstallCAdESTestTrustCertExample installCAdESTestTrustCertExample = new InstallCAdESTestTrustCertExample(adapter);
-    //            // Если сертификаты не установлены, сообщаем об
-    //            // этом и устанавливаем их.
-    //            if (!installRootCert.isAlreadyInstalled()) {
-//
-    //                // Предупреждение о выполнении установки.
-//
-    //                MainActivity.getLogCallback().clear();
-    //                MainActivity.getLogCallback().log("*** Forced installation of CA certificates (CAdES) ***");
-//
-    //                // Установка.
-    //                installRootCert.getResult(MainActivity.getLogCallback());
-    //                //installCAdESTestTrustCertExample.saveTrustCert(trustStoreFile, trustCert, callback, true);
-    //                //installCAdESTestTrustCertExample.getResult(callback);
-//
-    //            } // if
-//
-    //            cAdESCAInstalled = true;
-//
-    //        } catch (Exception e) {
-    //            MainActivity.getLogCallback().setStatusFailed();
-    //            Log.e(Constants.APP_LOGGER_TAG, e.getMessage(), e);
-    //        }
-//
-    //    }
-//
-    //}
-
-
 
     /************************ Инициализация провайдера ************************/
-
-    /**
-     * Инициализация CSP провайдера.
-     *
-     * @return True в случае успешной инициализации.
-     */
-    private boolean initCSPProviders() {
-
-        // Инициализация провайдера CSP. Должна выполняться
-        // один раз в главном потоке приложения, т.к. использует
-        // статические переменные.
-        //
-        // 1. Создаем инфраструктуру CSP и копируем ресурсы
-        // в папку. В случае ошибки мы, например, выводим окошко
-        // (или как-то иначе сообщаем) и завершаем работу.
-
-        int initCode = CSPConfig.init(this);
-        boolean initOk = initCode == CSPConfig.CSP_INIT_OK;
-
-        // Если инициализация не удалась, то сообщим об ошибке.
-        if (!initOk) {
-
-            switch (initCode) {
-
-                // Не передан контекст приложения (null). Он необходим,
-                // чтобы произвести копирование ресурсов CSP, создание
-                // папок, смену директории CSP и т.п.
-                case CSPConfig.CSP_INIT_CONTEXT:
-                    //errorMessage(this, "Couldn't initialize context.");
-                    Toast toast = Toast.makeText(getApplicationContext(), "Couldn't initialize Context.", Toast.LENGTH_LONG);
-                    toast.show();
-                    break;
-
-                /**
-                 * Не удается создать инфраструктуру CSP (папки): нет
-                 * прав (нарушен контроль целостности) или ошибки.
-                 * Подробности в logcat.
-                 */
-                case CSPConfig.CSP_INIT_CREATE_INFRASTRUCTURE:
-                    //errorMessage(this, "Couldn't create CSP infrastructure.");
-                    break;
-
-                /**
-                 * Не удается скопировать все или часть ресурсов CSP -
-                 * конфигурацию, лицензию (папки): нет прав (нарушен
-                 * контроль целостности) или ошибки.
-                 * Подробности в logcat.
-                 */
-                case CSPConfig.CSP_INIT_COPY_RESOURCES:
-                    //errorMessage(this, "Couldn't copy CSP resources.");
-                    break;
-
-                /**
-                 * Не удается задать рабочую директорию для загрузки
-                 * CSP. Подробности в logcat.
-                 */
-                case CSPConfig.CSP_INIT_CHANGE_WORK_DIR:
-                    //errorMessage(this, "Couldn't change CSP working directory.");
-                    break;
-
-                /**
-                 * Неправильная лицензия.
-                 */
-                case CSPConfig.CSP_INIT_INVALID_LICENSE:
-                    //errorMessage(this, "Invalid CSP serial number.");
-                    break;
-
-                /**
-                 * Не удается создать хранилище доверенных сертификатов
-                 * для CAdES API.
-                 */
-                case CSPConfig.CSP_TRUST_STORE_FAILED:
-                    //errorMessage(this, "Couldn't create trust store for CAdES API.");
-                    break;
-
-            } // switch
-
-        } // if
-
-        return initOk;
-    }
 
     @Override
     public void onResume() {
@@ -278,211 +133,202 @@ public class MainActivity extends AppCompatActivity {
 
         // Необходимо для отображения диалоговых окон
         // ДСЧ, ввода пин-кода и сообщений.
+
         CSPConfig.registerActivityContext(this);
+
     }
 
     /**
-     * Добавление нативного провайдера JCSP, SSL-провайдера
+     * Инициализация CSP провайдера. Добавление
+     * нативного провайдера Java CSP, SSL-провайдера
      * и Revocation-провайдера в список Security.
-     * Инициализируется JCPxml, CAdES.
      *
      * Происходит один раз при инициализации.
      * Возможно только после инициализации в CSPConfig!
      *
+     * @return true в случае успешной инициализации.
      */
-    private void initJavaProviders() {
+    private boolean initProviders() {
 
-        // Загрузка JTLS (TLS).
+        //
+        // Инициализация провайдера CSP. Должна выполняться
+        // один раз в главном потоке приложения, т.к. использует
+        // статические переменные.
+        //
+        // Далее может быть использована версия функции инициализации:
+        // 1) расширенная - initEx(): она содержит init() и дополнительно
+        // выполняет загрузку java-провайдеров (Java CSP, RevCheck, Java TLS)
+        // и настройку некоторых параметров, например, Java TLS;
+        // 2) обычная - init(): без загрузки java-провайдеров и настройки
+        // параметров.
+        //
+        // Для совместного использования ГОСТ и не-ГОСТ TLS НЕ следует
+        // переопределять свойства System.getProperty(javax.net.*) и
+        // Security.setProperty(ssl.*).
+        //
+        // Ниже используется обычная версия init() функции инициализации
+        // и свойства TLS НЕ переопределяются, т.к. в приложении нет примеров
+        // работы с УЦ 1.5, которые обращаются к свойствам по умолчанию.
+        //
+        // 1. Создаем инфраструктуру CSP и копируем ресурсы
+        // в папку. В случае ошибки мы, например, выводим окошко
+        // (или как-то иначе сообщаем) и завершаем работу.
+        //
 
-        // Необходимо переопределить свойства, чтобы использовались
-        // менеджеры из cpSSL, а не Harmony.
+        int initCode  = CSPConfig.initEx(this);
+        if (initCode != CSPConfig.CSP_INIT_OK) {
+            Log.d(Constants.APP_LOGGER_TAG, "Инициализация CSP НЕуспешна ");
+            //Logger.INSTANCE.append("Error occurred during CSP initiation: " + initCode);
+            return false;
+
+        }else
+            Log.d(Constants.APP_LOGGER_TAG, "Инициализация CSP успешна ");// if
+
+        // %%% Инициализация остальных провайдеров %%%
+
+        //
+        // 2. Загрузка Java CSP (хеш, подпись, шифрование,
+        // генерация контейнеров).
+        //
+
         if (Security.getProvider(JCSP.PROVIDER_NAME) == null) {
             Security.addProvider(new JCSP());
-        Security.setProperty("ssl.KeyManagerFactory.algorithm",
-                ru.CryptoPro.ssl.Provider.KEYMANGER_ALG);
-        Security.setProperty("ssl.TrustManagerFactory.algorithm",
-                ru.CryptoPro.ssl.Provider.KEYMANGER_ALG);
-
-        Security.setProperty("ssl.SocketFactory.provider",
-                "ru.CryptoPro.ssl.SSLSocketFactoryImpl");
-        Security.setProperty("ssl.ServerSocketFactory.provider",
-                "ru.CryptoPro.ssl.SSLServerSocketFactoryImpl");
-
-
-
-
-        if (Security.getProvider(ru.CryptoPro.ssl.Provider.PROVIDER_NAME) == null) {
-            Security.addProvider(new ru.CryptoPro.ssl.Provider());
+            Log.d(Constants.APP_LOGGER_TAG, "Инициализация JCSP успешна ");
         } // if
 
-        // Провайдер хеширования, подписи, шифрования по умолчанию.
+        //
+        // 3. Загрузка Java TLS (TLS).
+        //
+        // Необходимо переопределить свойства, чтобы
+        // использовались менеджеры из cpSSL, а не
+        // Harmony.
+        //
+        // Внимание!
+        // Чтобы не мешать не-ГОСТовой реализации, ряд свойств внизу *.ssl не
+        // следует переопределять. При этом не исключены проблемы в работе с
+        // ГОСТом там, где TLS-реализация клиента обращается к дефолтным алгоритмам
+        // реализаций этих factory (особенно: apache http client или HttpsURLConnection
+        // без SSLSocketFactory и с System.setProperty(javax.net.*)).
+        //
+        // Если инициализировать провайдер в CSPConfig с помощью initEx(), то
+        // свойства будут включены там, поэтому выше используется упрощенная
+        // версия инициализации.
+        //
+        // Security.setProperty("ssl.KeyManagerFactory.algorithm",   ru.CryptoPro.ssl.android.Provider.KEYMANGER_ALG);
+        // Security.setProperty("ssl.TrustManagerFactory.algorithm", ru.CryptoPro.ssl.android.Provider.KEYMANGER_ALG);
+        //
+        // Security.setProperty("ssl.SocketFactory.provider",       "ru.CryptoPro.ssl.android.SSLSocketFactoryImpl");
+        // Security.setProperty("ssl.ServerSocketFactory.provider", "ru.CryptoPro.ssl.android.SSLServerSocketFactoryImpl");
+        //
+
+        if (Security.getProvider(ru.CryptoPro.ssl.android.Provider.PROVIDER_NAME) == null) {
+            Security.addProvider(new ru.CryptoPro.ssl.android.Provider());
+            Log.d(Constants.APP_LOGGER_TAG, "Инициализация Java TLS успешна");
+        } // if
+
+        //
+        // 4. Провайдер хеширования, подписи, шифрования
+        // по умолчанию.
+        //
+
         cpSSLConfig.setDefaultSSLProvider(JCSP.PROVIDER_NAME);
 
-        // Загрузка Revocation Provider (CRL, OCSP).
+        //
+        // 5. Загрузка Revocation Provider (CRL, OCSP).
+        //
 
         if (Security.getProvider(RevCheck.PROVIDER_NAME) == null) {
             Security.addProvider(new RevCheck());
+            Log.d(Constants.APP_LOGGER_TAG, "Инициализация RevCheck успешна ");
         } // if
 
-        // Инициализация XML DSig (хеш, подпись).
+        //
+        // 6. Отключаем проверку цепочки штампа времени (CAdES-T),
+        // чтобы не требовать него CRL.
+        //
 
-//        XmlInit.init();
+        System.setProperty("ru.CryptoPro.CAdES.validate_tsp", "false");
 
-        // Параметры для Java TLS и CAdES API.
+        //
+        // 7. Таймауты для CRL на всякий случай.
+        //
 
-        // Провайдер CAdES API по умолчанию.
-        CAdESConfig.setDefaultProvider(JCSP.PROVIDER_NAME);
+        System.setProperty("com.sun.security.crl.timeout",  "5");
+        System.setProperty("ru.CryptoPro.crl.read_timeout", "5");
 
-        // Включаем возможность онлайновой проверки статуса сертификата.
+        // 8. Включаем возможность онлайновой проверки
+        // статуса сертификата.
+        //
+        // Для TLS проверку цепочки сертификатов другой стороны
+        // можно отключить, если создать параметр
+        // Enable_revocation_default=false в файле android_pref_store
+        // (shared preferences), см.
+        // {@link ru.CryptoPro.JCP.tools.pref_store#AndroidPrefStore}.
+        TLSSettings.setDefaultEnableRevocation(false);
         System.setProperty("com.sun.security.enableCRLDP", "true");
         System.setProperty("com.ibm.security.enableCRLDP", "true");
 
-        // Настройки TLS для генерации контейнера и выпуска сертификата
-        // в УЦ 2.0, т.к. обращение к УЦ 2.0 будет выполняться по протоколу
-        // HTTPS и потребуется авторизация по сертификату. Указываем тип
-        // хранилища с доверенным корневым сертификатом, путь к нему и пароль.
+        // Отключаем требование проверки сертификата и хоста.
+        System.setProperty("tls_prohibit_disabled_validation", "false");
 
-        final String trustStorePath = getApplicationInfo().dataDir + File.separator +
-                BKSTrustStore.STORAGE_DIRECTORY + File.separator + BKSTrustStore.STORAGE_FILE_TRUST;
+        // 9. Дополнительно задаем путь к хранилищу доверенных
+        // сертификатов.
+        // Не обязательно, если нет кода, использующего такой
+        // способ получения списка доверенных сертификатов.
+        //
+        // Внимание!
+        // Чтобы не мешать не-ГОСТовой реализации, ряд свойств внизу *.ssl и
+        // javax.net.* НЕ следует переопределять. Но при этом не исключены проблемы
+        // в работе с ГОСТом там, где TLS-реализация клиента обращается к дефолтным
+        // алгоритмам реализаций этих factory (особенно: apache http client или
+        // HttpsURLConnection без передачи SSLSocketFactory).
+        // Здесь эти свойства НЕ включены, т.к. нет примеров работы с УЦ 1.5,
+        // использующих алгоритмы по умолчанию.
+        //
+         final String trustStorePath = getLocalTrustStorePath();
+         final String trustStorePassword = String.valueOf(getLocalTrustStorePassword());
 
-        final String trustStorePassword = String.valueOf(BKSTrustStore.STORAGE_PASSWORD);
-        Log.d(Constants.APP_LOGGER_TAG, "Default trust store: " + trustStorePath);
+         Log.d(Constants.APP_LOGGER_TAG, "Default trust store: " + trustStorePath);
 
-        System.setProperty("javax.net.ssl.trustStoreType", BKSTrustStore.STORAGE_TYPE);
-        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
+         System.setProperty("javax.net.ssl.trustStoreType", getLocalTrustStoreType());
+         System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
 
-    }
-    }
-    /**
-     * Копирование тестовых контейнеров для подписи, шифрования,
-     * обмена по TLS в папку keys.
-     */
-    private void installContainers() {
-
-        // Имена файлов в контейнере.
-        final String[] pseudos = {
-                "header.key",
-                "masks.key",
-                "masks2.key",
-                "name.key",
-                "primary.key",
-                "primary2.key"
-        };
-
-        // Список алиасов контейнеров.
-        final String[] aliases = {
-                IContainers.CLIENT_CONTAINER_NAME,          // ГОСТ 34.10-2001
-                IContainers.SERVER_CONTAINER_NAME,          // ГОСТ 34.10-2001
-                IContainers.CLIENT_CONTAINER_2012_256_NAME, // ГОСТ 34.10-2012 (256)
-                IContainers.SERVER_CONTAINER_2012_256_NAME, // ГОСТ 34.10-2012 (256)
-                IContainers.CLIENT_CONTAINER_2012_512_NAME, // ГОСТ 34.10-2012 (512)
-                IContainers.SERVER_CONTAINER_2012_512_NAME  // ГОСТ 34.10-2012 (512)
-        };
-
-        // Список контейнеров и файлов внутри.
-        final Integer[][] containers = {
-                {R.raw.clienttls_header, R.raw.clienttls_masks, R.raw.clienttls_masks2, R.raw.clienttls_name, R.raw.clienttls_primary, R.raw.clienttls_primary2},
-                {R.raw.servertls_header, R.raw.servertls_masks, R.raw.servertls_masks2, R.raw.servertls_name, R.raw.servertls_primary, R.raw.servertls_primary2},
-                {R.raw.cli12256_header, R.raw.cli12256_masks, R.raw.cli12256_masks2, R.raw.cli12256_name, R.raw.cli12256_primary, R.raw.cli12256_primary2},
-                {R.raw.ser12256_header, R.raw.ser12256_masks, R.raw.ser12256_masks2, R.raw.ser12256_name, R.raw.ser12256_primary, R.raw.ser12256_primary2},
-                {R.raw.cli12512_header, R.raw.cli12512_masks, R.raw.cli12512_masks2, R.raw.cli12512_name, R.raw.cli12512_primary, R.raw.cli12512_primary2},
-                {R.raw.ser12512_header, R.raw.ser12512_masks, R.raw.ser12512_masks2, R.raw.ser12512_name, R.raw.ser12512_primary, R.raw.ser12512_primary2}
-        };
-
-        // Копирование контейнеров.
-
-        try {
-
-            for (int i = 0; i < containers.length; i++) {
-
-                final Integer[] container = containers[i];
-                final Map<Integer, String> containerFiles = new HashMap<Integer, String>();
-
-                for (int j = 0; j < container.length; j++) {
-                    containerFiles.put(container[j], pseudos[j]);
-                } // for
-
-                installContainer(aliases[i], containerFiles);
-
-            } // for
-
-        } catch (Exception e) {
-            Log.e(Constants.APP_LOGGER_TAG, "ХУЙ", e);
-        }
+        return true;
 
     }
 
     /**
-     * Копирование файлов контейнера в папку согласно названию
-     * контейнера.
+     * Получение типа хранилища доверенных сертификатов.
      *
-     * @param containerName  Имя папки контейнера.
-     * @param containerFiles Список и ссылки на файлы контейнера.
-     * @throws Exception
+     * @return тип хранилища.
      */
-    private void installContainer(String containerName,
-                                  Map<Integer, String> containerFiles) throws Exception {
-
-        String resourceDirectory = userName2Dir(this) + File.separator + containerName;
-        Log.i(Constants.APP_LOGGER_TAG, "Install container: " +
-                containerName + " to resource directory: " + resourceDirectory);
-
-        CSPTool cspTool = new CSPTool(this);
-
-        // Копируем ресурсы  в папку keys.
-        RawResource resource = cspTool.createRawResource(
-                Constants.CSP_SOURCE_TYPE_CONTAINER, resourceDirectory);
-
-        Iterator<Integer> iterator = containerFiles.keySet().iterator();
-
-        while (iterator.hasNext()) {
-            Integer index = iterator.next();
-            String fileName = containerFiles.get(index);
-            if (!resource.copy(index, fileName)) {
-                throw new Exception("Couldn't copy " + fileName);
-            } // if
-        } // while
+    private String getLocalTrustStoreType() {
+        return BKSTrustStore.STORAGE_TYPE;
     }
 
     /**
-     * Формируем имя папки в формате [uid].[uid] для
-     * дальнейшего помещения в нее ключевого контейнера.
+     * Получение пути к хранилищу доверенных сертификатов.
      *
-     * @param context Контекст формы.
-     * @return имя папки.
-     * @throws Exception
+     * @return путь к хранилищу.
      */
-    public static String userName2Dir(Context context)
-            throws Exception {
+    private String getLocalTrustStorePath() {
 
-        ApplicationInfo appInfo = context.getPackageManager()
-                .getPackageInfo(context.getPackageName(), 0)
-                .applicationInfo;
+        return getApplicationInfo().dataDir + File.separator +
+                BKSTrustStore.STORAGE_DIRECTORY + File.separator +
+                BKSTrustStore.STORAGE_FILE_TRUST;
 
-        return String.valueOf(appInfo.uid) + "." +
-                String.valueOf(appInfo.uid);
-    }
-
-    /************************** Служебные функции ****************************/
-
-    /**
-     * Получение объекта для вывода логов и смены статуса.
-     *
-     * @return объект.
-     */
-    public static LogCallback getLogCallback() {
-        return logCallback;
     }
 
     /**
-     * Получение объекта провайдера Java CSP.
+     * Получение пароля к хранилищу доверенных сертификатов.
      *
-     * @return провайдер Java CSP.
+     * @return пароль к хранилищу.
      */
-    public static Provider getDefaultKeyStoreProvider() {
-        return defaultKeyStoreProvider;
+    private char[] getLocalTrustStorePassword() {
+        return BKSTrustStore.STORAGE_PASSWORD;
     }
+
 
 
 

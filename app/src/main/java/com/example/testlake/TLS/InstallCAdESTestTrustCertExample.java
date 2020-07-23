@@ -106,7 +106,8 @@ public class InstallCAdESTestTrustCertExample {
         checkTrustStore();
 
         //trustStreamForSigner = context.getResources().openRawResource(R.raw.ext_test_ca);  // root certificate for signer
-        trustStreamForTsp = context.getResources().openRawResource(R.raw.root_gen); // root certificate for tsp
+        trustStreamForTsp = context.getResources().openRawResource(R.raw.root); // root certificate for tsp
+        //trustStreamForTsp = context.getResources().openRawResource(R.raw.root_gen); // root certificate for tsp
 
         //loadCert(trustStreamForSigner);
         loadCert(trustStreamForTsp);
@@ -162,12 +163,15 @@ public class InstallCAdESTestTrustCertExample {
         trustStoreFile = new File(trustStore);
         if (!trustStoreFile.exists()) {
             trustStoreFile.createNewFile();
-        } // if
+
+        }  else
+            Log.e(Constants.APP_LOGGER_TAG, "ЕСТЬ!");// if
 
         if (!trustStoreFile.exists()) {
             throw new Exception("Trust store " + trustStore +
                     " doesn't exist");
-        } // if
+        }  else
+            Log.e(Constants.APP_LOGGER_TAG, "ЕСТЬ!2");// if
 
     }
 

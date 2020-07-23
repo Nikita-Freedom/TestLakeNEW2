@@ -24,7 +24,7 @@ import javax.net.ssl.TrustManagerFactory;
 import ru.CryptoPro.JCP.KeyStore.StoreInputStream;
 import ru.CryptoPro.JCSP.JCSP;
 import ru.CryptoPro.JCSP.support.BKSTrustStore;
-import ru.CryptoPro.ssl.Provider;
+import ru.CryptoPro.ssl.android.Provider;
 import ru.cprocsp.ACSP.tools.common.Constants;
 
 public class Utils {
@@ -55,14 +55,12 @@ public class Utils {
         } catch (Exception e) {
             Log.e(Constants.APP_LOGGER_TAG, "Cannot load key store", e);
         }
-
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(
-                Provider.KEYMANGER_ALG, Provider.PROVIDER_NAME);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(Provider.KEYMANGER_ALG, Provider.PROVIDER_NAME);
         tmf.init(ts);
 
         SSLContext sslContext = SSLContext.getInstance(Provider.ALGORITHM, Provider.PROVIDER_NAME);
         sslContext.init(null, tmf.getTrustManagers(), null);
-
         return sslContext.getSocketFactory();
+
     }
 }

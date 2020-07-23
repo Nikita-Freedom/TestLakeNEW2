@@ -17,11 +17,13 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity">
+        tools:context=".ui.MainActivity"
+        android:background="@drawable/papor">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:paddingEnd="16dp">
 
             <LinearLayout
@@ -49,7 +51,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@{TextUtils.isEmpty(viewModel.url) ? @string/empty_server_url : viewModel.url}"
                     android:textIsSelectable="true"
-                    style="@style/TextAppearance.MaterialComponents.Body1" />
+                    android:textColor="#FFFF"/>
 
                 <TextView
                     android:id="@+id/server_connect_status"
@@ -59,17 +61,12 @@
                     android:visibility="@{viewModel.checkState.status == CheckServerState.Status.UNKNOWN ? View.GONE : View.VISIBLE}"
                     android:textColor="@{MainActivity.getServerStatusColor(context, viewModel.checkState)}"
                     style="@style/TextAppearance.MaterialComponents.Caption" />
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="сканировать штрихкод"
-                    android:gravity="center"
-                    android:id="@+id/btnscan" />
+
                 <Button
                     android:id="@+id/btExamplesExecute"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Выполнить запрос"/>
+                    android:text="Добавить сертификат"/>
             </LinearLayout>
 
 
